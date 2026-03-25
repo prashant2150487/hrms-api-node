@@ -16,7 +16,7 @@ const tenantMiddleware = async (req, res, next) => {
   }
 
   try {
-    const tenant = await Tenant.findOne({ where: { subdomain: req.subdomain, is_active: true } });
+    const tenant = await Tenant.findOne({ where: { subdomain: req.subdomain, is_active: 1 } });
 
     if (!tenant) {
       return next(new ApiError(404, 'Tenant not found or inactive'));
