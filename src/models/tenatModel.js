@@ -28,9 +28,9 @@ const Tenant = sequelize.define('Tenant', {
     defaultValue: 'free',
   },
   is_active: {
-    type: DataTypes.SMALLINT,
+    type: DataTypes.BOOLEAN,
     allowNull: false,
-    defaultValue: 1,
+    defaultValue: true,
   },
   //  ISO 3166-1 alpha-2  e.g. IN, US, GB
   country_code: {

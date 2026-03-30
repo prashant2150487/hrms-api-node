@@ -394,20 +394,7 @@ volumes:
   postgres_data:
 ```
 
-## ✅ Testing Strategy
 
-Create `src/tests/setup.js`:
-```javascript
-const { sequelize } = require('../models');
-
-beforeAll(async () => {
-  await sequelize.sync({ force: true });
-});
-
-afterAll(async () => {
-  await sequelize.close();
-});
-```
 
 ## 📝 Environment Variables
 
@@ -447,43 +434,200 @@ SMTP_USER=
 SMTP_PASS
 ```
 
-## 🎯 Immediate Action Items
 
-1. **Initialize Git repository**
-2. **Create package.json and install dependencies**
-3. **Setup Sequelize with PostgreSQL**
-4. **Create first migration for Tenant, User, Role**
-5. **Implement basic authentication**
-6. **Create Postman collection for testing**
-7. **Setup Docker environment**
-8. **Write first unit tests**
 
-## 📚 Key Dependencies to Install
 
-```bash
-# Core
-npm install express sequelize pg pg-hstore redis jsonwebtoken bcryptjs
+## 📖 Overview
 
-# Security
-npm install helmet cors express-rate-limit express-mongo-sanitize xss
+This repository contains the **Enterprise HRMS (Human Resource Management System)** — a large-scale, multi-tenant platform designed to manage the full employee lifecycle. The system provides a robust REST API consumed by a React admin panel and mobile clients, with a strong emphasis on role-based access control (RBAC), scalability, and compliance (GDPR, PDPA).
 
-# Validation
-npm install express-validator joi
+The platform is built with a **Node.js** backend, containerized with **Docker**, and deployed on **AWS** to support horizontal scaling for organizations of any size.
 
-# File upload
-npm install multer multer-s3 aws-sdk
+---
 
-# Queue
-npm install bullmq
+## 🏗️ Architecture & Technology Stack
 
-# Logging
-npm install winston morgan
+| Category | Technology |
+| :--- | :--- |
+| **Backend** | Node.js (v20), Express.js, TypeScript |
+| **Database** | PostgreSQL 16 (Primary), Redis (Cache & Queue Broker) |
+| **Auth** | JWT (Access/Refresh), OAuth2 (Google/MS), TOTP MFA |
+| **File Storage** | AWS S3 |
+| **Search** | Elasticsearch 8 |
+| **Queue/Jobs** | BullMQ (Redis-based) |
+| **Infra** | Docker, AWS ECS (Fargate), AWS RDS, AWS ElastiCache, AWS ALB |
+| **Monitoring** | AWS CloudWatch, Sentry, Prometheus (optional) |
 
-# Utils
-npm install uuid moment lodash axios
+---
 
-# Testing
-npm install -D jest supertest
+## 👥 Role Hierarchy & Access Control
+
+The system implements a strict, hierarchical RBAC model. Access is defined per module, ensuring data isolation and security.
+
+| Role | Description |
+| :--- | :--- |
+| **Super Admin** | **Platform Owner.** Has unrestricted access across *all* tenants. Responsible for system configuration, billing, global user management, and auditing the entire platform. Cannot be created through standard flows. |
+| **Admin** | **Software Purchaser/Tenant Owner.** This role is assigned to the primary contact who purchases the software for their company. They have full control over *their specific tenant* (company/subsidiary) but no access to other tenants or the platform's core system settings. This role inherits all permissions of an HR Admin but is the "root" user for their tenant. |
+| **HR Admin** | Full HR operations within their tenant: employee CRUD, payroll, leave policies, and reports. |
+| **Manager** | Team lead; approves leave, views team attendance, and manages performance for direct reports. |
+| **Employee** | Self-service access: profile, leave requests, payslips, and own data. |
+| *Other Roles* | Recruiter, Finance, Auditor (each with specific, granular permissions as defined in the PRD). |
+
+> **Key Distinction:** A **Super Admin** manages the platform (e.g., creating new tenants, viewing all system logs). An **Admin** is the highest role *within a tenant* and manages their company's instance.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v20+)
+- Docker and Docker Compose (for local development)
+- AWS CLI (for deployment)
+- PostgreSQL client (psql)
+
+### Local Development Setup
+
+1.  **Clone the repository:**
+    ```bash
+    git clone <your-repository-url>
+    cd hrms-backend
+    ```
+
+2.  **Copy the environment variables:**
+    ```bash
+    cp .env.example .env
+    ```
+    Edit `.env` and fill in the required values (database credentials, JWT secret, etc.).
+
+3.  **Start dependencies (PostgreSQL, Redis) using Docker Compose:**
+    ```bash
+    docker-compose up -d postgres redis
+    ```
+
+4.  **Install dependencies and run migrations:**
+    ```bash
+    npm install
+    npx prisma migrate dev  # or your ORM's migration command
+    ```
+
+5.  **Start the development server:**
+    ```bash
+    npm run dev
+    ```
+    The API will be available at `http://localhost:3000/api/v1`.
+
+---
+
+## 🐳 Docker & AWS Deployment
+
+The application is designed to be fully containerized and deployed on AWS.
+
+### Containerization
+
+A `Dockerfile` is provided to build the Node.js application image. The `docker-compose.yml` file is used for local orchestration of the app and its dependencies.
+
+### AWS Deployment Strategy
+
+The recommended deployment architecture on AWS is:
+
+- **Compute:** **AWS ECS (Elastic Container Service) with Fargate.** This allows for serverless, containerized deployments. Multiple ECS services are created for:
+    - `api`: The main Express.js application.
+    - `worker`: A BullMQ worker process to handle background jobs (payroll, emails, reports).
+    - `scheduler`: A process running `node-cron` or similar for scheduled tasks.
+- **Database:** **AWS RDS for PostgreSQL** with Multi-AZ deployment for high availability.
+- **Caching & Queue:** **AWS ElastiCache for Redis** (cluster mode disabled for simple queue/cache).
+- **Load Balancing:** **Application Load Balancer (ALB)** to distribute traffic to the `api` service.
+- **Networking:** Services are deployed in private subnets, with the ALB in public subnets.
+- **Storage:** **AWS S3** for all file uploads (documents, payslips, avatars).
+- **CI/CD:** **GitHub Actions** configured to build the Docker image, push to **Amazon ECR**, and trigger a new ECS deployment upon push to the `main` branch.
+
+---
+
+## 📚 API Reference
+
+All endpoints are prefixed with `/api/v1/`. Authentication is via JWT Bearer token.
+
+- **Base URL:** `https://api.your-domain.com/api/v1/`
+- **Auth Header:** `Authorization: Bearer <access_token>`
+- **Format:** JSON
+- **Pagination:** `?page=1&page_size=25`
+- **Filtering:** `?field=value`
+- **Search:** `?search=keyword`
+
+### Key Endpoints
+
+A complete Postman/OpenAPI collection is available in `/docs`. Key functional areas include:
+
+| Module | Example Endpoints |
+| :--- | :--- |
+| **Authentication** | `POST /auth/login`, `POST /auth/register`, `POST /auth/mfa/setup` |
+| **Tenant & Admin** | `GET /tenants` (Super Admin only), `PATCH /tenants/{id}/settings` |
+| **Employees** | `GET /employees`, `POST /employees`, `GET /employees/org-chart` |
+| **Payroll** | `GET /payroll/runs`, `POST /payroll/runs/{id}/process` |
+| **Leave** | `POST /leave/requests`, `POST /leave/requests/{id}/approve` |
+| **Recruitment** | `GET /recruitment/jobs`, `POST /recruitment/applications` |
+| **Performance** | `GET /performance/cycles`, `POST /performance/goals` |
+| **Reports** | `GET /reports/headcount`, `POST /reports/export` |
+
+---
+
+## 🔒 Security & Compliance
+
+- **Authentication:** JWT tokens with 15-minute access and 7-day refresh, stored in HttpOnly cookies.
+- **MFA:** TOTP-based 2FA is enforced for Admin, HR Admin, and Finance roles.
+- **Authorization:** RBAC is enforced at the controller/middleware level. Row-level security ensures users can only access their own or their subordinates' data.
+- **Data Encryption:** Sensitive PII (e.g., salary, tax IDs) is encrypted at rest using AWS KMS and application-level encryption.
+- **Audit Logging:** Every create, update, delete, and export action is logged immutably with actor, timestamp, and IP address.
+- **Compliance:** Built to support GDPR and PDPA data portability (export) and erasure (right to be forgotten) requests.
+
+---
+
+## 📊 Monitoring & Observability
+
+- **Application Logs:** Streamed to **AWS CloudWatch Logs** from ECS containers.
+- **Performance Metrics:** **AWS CloudWatch** monitors ECS, RDS, and ElastiCache health. Custom business metrics (e.g., payroll run duration) are exposed via a `/metrics` endpoint for Prometheus.
+- **Error Tracking:** **Sentry** is integrated to capture and alert on unhandled exceptions and performance bottlenecks.
+
+---
+
+## 📁 Project Structure
+
+```
+hrms-backend/
+├── src/
+│   ├── controllers/     # Request handlers
+│   ├── services/        # Business logic
+│   ├── models/          # Database models (e.g., Prisma, Sequelize)
+│   ├── middlewares/     # Auth, RBAC, tenant resolution, validation
+│   ├── routes/          # API route definitions (grouped by module)
+│   ├── utils/           # Helper functions, logger
+│   ├── workers/         # BullMQ job processors
+│   └── app.js           # Express app initialization
+├── docker-compose.yml
+├── Dockerfile
+├── .github/workflows/   # CI/CD pipelines
+└── package.json
 ```
 
-This structure follows your PRD's module organization and implements all the core requirements including multi-tenancy, RBAC, and the extensive API specification. Start with the foundation (auth + tenant) and progressively add modules based on business priority.
+---
+
+## 🤝 Contributing
+
+1.  Create a feature branch from `develop`.
+2.  Write clear, tested code following the established ESLint/Prettier rules.
+3.  Ensure all existing tests pass (`npm test`).
+4.  Open a pull request with a detailed description of changes.
+5.  The pull request requires at least one approval before merging.
+
+---
+
+## 📜 License
+
+This is proprietary software. Unauthorized copying, distribution, or use is strictly prohibited.
+
+---
+
+## 📞 Support
+
+For support inquiries, please contact our engineering team at **support@hrms-platform.com** or open a ticket in our internal Jira/Service Desk.

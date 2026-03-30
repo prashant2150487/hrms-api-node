@@ -48,6 +48,7 @@ const seedRolesAndPermissions = async () => {
         // 3. Define Roles
         const rolesData = [
             { name: 'super_admin', label: 'Super Admin', in_system: 1 },
+            { name: 'admin', label: 'Admin', in_system: 1 },
             { name: 'hr_admin', label: 'HR Admin', in_system: 1 },
             { name: 'manager', label: 'Manager', in_system: 1 },
             { name: 'employee', label: 'Employee', in_system: 1 },
@@ -79,6 +80,12 @@ const seedRolesAndPermissions = async () => {
 
         const matrix = {
             'super_admin': {
+                'employees': 'manage', 'payroll': 'manage', 'leave': 'manage', 'recruitment': 'manage',
+                'performance': 'manage', 'attendance': 'manage', 'training': 'manage', 'documents': 'manage',
+                'reports': 'manage', 'system_config': 'manage', 'audit_logs': 'manage', 'expenses': 'manage',
+                'onboarding': 'manage', 'assets': 'manage'
+            },
+            'admin': {
                 'employees': 'manage', 'payroll': 'manage', 'leave': 'manage', 'recruitment': 'manage',
                 'performance': 'manage', 'attendance': 'manage', 'training': 'manage', 'documents': 'manage',
                 'reports': 'manage', 'system_config': 'manage', 'audit_logs': 'manage', 'expenses': 'manage',

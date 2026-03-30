@@ -32,23 +32,23 @@ export const register = async (req, res, next) => {
     const password_hash = await bcrypt.hash(password, salt);
 
     const tenant = await Tenant.create({
-      name, subdomain, plan: "free", is_active: 1
+      name, subdomain, plan: "free", is_active: true
     }, { transaction: t });
 
-    const superAdminRole = await Role.findOne({
-      where: { name: 'super_admin' },
+    const adminRole = await Role.findOne({
+      where: { name: 'admin' },
       transaction: t,
     });
 
-    if (!superAdminRole) {
-      throw new Error('Super Admin role not found. Please seed the database.');
+    if (!adminRole) {
+      throw new Error('Admin role not found. Please seed the database.');
     }
 
     const user = await User.create({
       email,
       tenant_id: tenant.id,
       password_hash,
-      role_id: superAdminRole.id
+      role_id: adminRole.id
     }, { transaction: t });
 
     // Split name for employee profile

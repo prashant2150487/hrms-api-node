@@ -20,11 +20,14 @@ export const abac = (permission, options = {}) => {
         return next(new ApiError(401, "User not authenticated"));
       }
 
-      // 1. RBAC Check: If user has explicitly granted permission, allow access
-      const hasPermission = user.role?.permissions?.some(p => p.codename === permission);
+      // 1. RBAC/Role Check: If user has explicitly granted permission or allowed role
+      const hasPermission = permission ? user.role?.permissions?.some(p => p.codename === permission) : false;
+      const hasAllowedRole = options.allowedRoles ? options.allowedRoles.includes(user.role?.name) : false;
       
-      // If we only need RBAC and user has permission, we are done
-      if (hasPermission && !options.checkOwnership && !options.checkManager && !options.checkDepartment) {
+      const hasBaseAccess = hasPermission || hasAllowedRole;
+
+      // If we only need RBAC/Role and user has access, we are done
+      if (hasBaseAccess && !options.checkOwnership && !options.checkManager && !options.checkDepartment) {
         return next();
       }
 
@@ -40,7 +43,7 @@ export const abac = (permission, options = {}) => {
         
         if (!resourceId) {
           // If no resource ID and user doesn't have global permission, deny
-          if (hasPermission) return next();
+          if (hasBaseAccess) return next();
           return next(new ApiError(403, "Access denied: Missing resource identifier"));
         }
 
@@ -53,8 +56,9 @@ export const abac = (permission, options = {}) => {
           return next(new ApiError(404, "Resource not found"));
         }
 
-        // Multi-tenant isolation check (mandatory)
-        if (resource.tenant_id !== user.tenant_id) {
+        // Multi-tenant isolation check (mandatory for everyone except Super Admin)
+        const isSuperAdmin = user.role?.name === 'super_admin';
+        if (resource.tenant_id !== user.tenant_id && !isSuperAdmin) {
           return next(new ApiError(403, "Access denied: Resource belongs to another tenant"));
         }
 
@@ -98,7 +102,7 @@ export const abac = (permission, options = {}) => {
       // If all checks fail and user has the permission, they might have global 'view' access but not specific ABAC access.
       // Usually, having the permission allows viewing ALL records in the tenant, while ABAC restricts it.
       // But if user has NO permission and NO attribute match, deny.
-      if (hasPermission) {
+      if (hasBaseAccess) {
           return next();
       }
 
@@ -110,3 +114,13 @@ export const abac = (permission, options = {}) => {
     }
   };
 };
+
+
+// Allows users with the 'employees:view' permission OR users with the 'admin' or 'hr_admin' role
+// router.get("/", auth, abac('employees:view', { allowedRoles: ['admin', 'hr_admin'] }), getAllUsers);
+
+// Enforces strictly that only 'admin' and 'super_admin' can access this route
+// router.get("/sensitive-data", auth, abac(null, { allowedRoles: ['admin', 'super_admin'] }), getSensitiveData);
+
+
+

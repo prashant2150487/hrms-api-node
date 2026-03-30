@@ -12,7 +12,7 @@ export const getAllTenants = async (req, res) => {
         })
 
     } catch (err) {
-        console.err(err)
+        console.error(err)
         return res.status(500).json({
             sucess: true,
             message: "internal server error",
@@ -91,7 +91,7 @@ export const deleteTenant = async (req, res) => {
             })
         }
         // soft delete
-        tenant.is_active = 0
+        tenant.is_active = false
         await tenant.save();
         return res.status(200).json({
             sucess: true,
@@ -100,10 +100,10 @@ export const deleteTenant = async (req, res) => {
         })
     }
     catch (err) {
-        console.err(err);
+        console.error(err);
         return res.status(500).json({
             sucess: false,
-            message: true,
+            message: "Internal server error",
             data: null
         })
     }
