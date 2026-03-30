@@ -6,7 +6,6 @@ import RolePermission from '../models/rolePermissionModel.js';
 const seedRolesAndPermissions = async () => {
     try {
         await sequelize.authenticate();
-        console.log('Database connection established.');
 
         // 1. Define Modules and Actions
         const modules = {
@@ -29,7 +28,6 @@ const seedRolesAndPermissions = async () => {
         const actions = ['manage', 'view', 'own', 'approve', 'team', 'assign', 'enroll', 'job'];
 
         // 2. Create Permissions
-        console.log('Seeding Permissions...');
         const permissionMap = {};
         for (const [moduleKey, moduleName] of Object.entries(modules)) {
             for (const action of actions) {

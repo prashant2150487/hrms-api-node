@@ -10,7 +10,7 @@ const config = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     dialect: 'postgres',
-    logging: console.log,
+    logging: process.env.DB_LOGGING === 'true' ? console.log : false,
   },
   test: {
     username: process.env.DB_USER,

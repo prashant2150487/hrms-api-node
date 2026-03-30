@@ -40,18 +40,18 @@ const User = sequelize.define('User', {
     allowNull: true
   },
   is_active: {
-    type: DataTypes.SMALLINT,
-    defaultValue: 1,
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
     allowNull: false
   },
   is_email_varified: {
-    type: DataTypes.SMALLINT,
-    defaultValue: 0,
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
     allowNull: false
   },
   mfa_enabled: {
-    type: DataTypes.SMALLINT,
-    defaultValue: 0,
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
     allowNull: false
   },
   mfa_secret: {
