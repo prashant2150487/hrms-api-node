@@ -621,13 +621,3 @@ hrms-backend/
 5.  The pull request requires at least one approval before merging.
 
 ---
-
-## 📜 License
-
-This is proprietary software. Unauthorized copying, distribution, or use is strictly prohibited.
-
----
-
-## 📞 Support
-
-For support inquiries, please contact our engineering team at **support@hrms-platform.com** or open a ticket in our internal Jira/Service Desk.
