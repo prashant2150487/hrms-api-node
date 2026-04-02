@@ -5,7 +5,7 @@ import { auth } from "../../middleware/auth.js";
 
 
 const router = express.Router();
-router.get("", auth , abac('employees:view'), getAllUsers)
+router.get("", auth , getAllUsers)
 
 
 export default router;

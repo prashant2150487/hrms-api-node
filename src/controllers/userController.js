@@ -10,7 +10,6 @@ export const getAllUsers = async (req, res, next) => {
             where: {
                 tenant_id: req.user.tenant_id,
                 is_active: true,
-                is_deleted: false,
 
             }
         })
