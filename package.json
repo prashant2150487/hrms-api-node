@@ -4,6 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=25.x",
+    "yarn": ">=1.22.0"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "bullmq": "^5.71.0",
