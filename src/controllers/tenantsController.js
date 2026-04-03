@@ -22,7 +22,7 @@ export const getAllTenants = async (req, res) => {
     }
 }
 
-export const getTenantById = async (req, res, next) => {
+export const getTenantById = async (req, res) => {
     try {
         const { id } = req.params;
         const tenant = await Tenant.findByPk(id);

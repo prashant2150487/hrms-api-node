@@ -23,6 +23,7 @@ export const auth = async (req, res, next) => {
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
+      console.error(err)
       return next(new ApiError(401, "Invalid or expired token"));
     }
 

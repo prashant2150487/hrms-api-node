@@ -2,7 +2,6 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
-import { ApiError } from './utils/apiError.js';
 import { ApiResponse } from './utils/apiResponse.js';
 import errorHandler from './middleware/errorHandler.js';
 

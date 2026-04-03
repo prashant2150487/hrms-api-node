@@ -3,7 +3,7 @@ import User from "../models/userModel.js";
 
 
 
-export const getAllUsers = async (req, res, next) => {
+export const getAllUsers = async (req, res) => {
     // list all users in tanats
     try {
         const users = await User.findAll({

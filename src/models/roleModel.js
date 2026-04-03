@@ -38,7 +38,6 @@ const Role = sequelize.define('Role', {
     tableName: 'roles',
     updatedAt: false,
     createdAt: 'created_at',
-    underscored: true,
     indexes: [
         {
             fields: ['tenant_id']

@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from "../config/database.js";
-import Tenant from "./tenatModel.js";
 
 
 const Permission = sequelize.define('Permission', {
@@ -37,8 +36,7 @@ const Permission = sequelize.define('Permission', {
 }, {
     timestamps: false,
     underscored: true,
-    tableName: 'permissions',
-    underscored: true
+    tableName: 'permissions'
 });
 
 

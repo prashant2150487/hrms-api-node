@@ -40,7 +40,7 @@ const req = http.request(options, (res) => {
         console.log('❌ Login verification failed logic!');
       }
     } catch (e) {
-      console.log('Body trace:', body);
+      console.log('Body trace:', body,e);
       console.log('❌ Login verification failed parsing!');
     }
   });
