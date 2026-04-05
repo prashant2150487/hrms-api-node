@@ -7,7 +7,7 @@ import { abac } from "../../middleware/abac.js";
 const router = express.Router();
 
 router.get('', auth, getAllTenants);
-router.get('/:id', auth, abac('system_config:manage'), getTenantById);
+router.get('/:id', auth, getTenantById);
 router.patch("/:id", auth, abac('system_config:manage'), updateTenant);
 router.delete("/:id", auth, abac('system_config:manage'), deleteTenant);
 

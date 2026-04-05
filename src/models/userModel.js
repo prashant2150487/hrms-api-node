@@ -16,7 +16,6 @@ const User = sequelize.define('User', {
       model: 'tenants',
       key: 'id',
     },
-    unique: 'user_tenant_email',
   },
   role_id: {
     type: DataTypes.INTEGER,
