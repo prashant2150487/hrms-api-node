@@ -177,7 +177,9 @@ export const setPermissionOnRole = async (req, res) => {
                 error: "Role not found"
             })
         }
-        await role.setPermissions(permissions);
+        // Use addPermissions to append without deleting existing ones.
+        // (Note: If you ever want to completely overwrite all permissions, use setPermissions instead)
+        await role.addPermissions(permissions);
         return res.status(200).json({
             message: "Permissions set successfully",
             success: true,
