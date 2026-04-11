@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hrms-api-app
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+      - /app/node_modules # Avoid overriding the container's node_modules with the host's
+    environment:
+      - PORT=5000
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=hrms_db
+      - DB_USER=hrms_admin
+      - DB_PASS=test@123
+      - DB_LOGGING=false
+      - NODE_ENV=development
+      - JWT_SECRET=PranshantKeySecure@2026!
+      - JWT_ACCESS_TOKEN_EXPIRY=1d
+      - JWT_REFRESH_TOKEN_EXPIRY=7d
+      # If Redis is added later, configure its URL here
+      # - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+    # Uncomment the following line if you also want redis to start
+    #  - redis
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: hrms-api-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=hrms_admin
+      - POSTGRES_PASSWORD=test@123
+      - POSTGRES_DB=hrms_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: hrms-api-redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   restart: unless-stopped
+
+volumes:
+  postgres_data:
+  # redis_data:

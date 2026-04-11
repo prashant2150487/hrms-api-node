@@ -33,3 +33,6 @@ jobs:
 
       # - name: Run tests
       #   run: yarn test
+
+      - name: Build Docker Image
+        run: docker build -t hrms-api:test .
