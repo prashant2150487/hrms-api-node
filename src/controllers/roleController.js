@@ -14,7 +14,7 @@ import Role from "../models/roleModel.js"
 
 export const getAllRoles = async (req, res) => {
     try {
-        const { tenant_id } = req.user
+        // const { tenant_id } = req.user
         const roles = await Role.findAll({})
         if (!roles) {
             return res.status(404).json({

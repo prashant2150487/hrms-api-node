@@ -1,4 +1,5 @@
-
+import Employee from "../models/employeemodel.js";
+import { Op } from "sequelize";
 
 
 
@@ -7,48 +8,48 @@
 // HR Admin/Manager
 // List employees (filterable)
 
-export const getAllEmployees = async (req, res, next) => {
+
+export const getAllEmployees = async (req, res) => {
     try {
         const { tenant_id } = req.user;
         const { page = 1, limit = 10, search = "" } = req.query;
 
-        const offset = (page - 1) * limit;
-        const where={
+        const offset = (parseInt(page) - 1) * parseInt(limit);
+
+        const where = {
             tenant_id,
-            [Op.or]:[
-                {firstName:{[Op.iLike]:`%${search}%`}},
-                {lastName:{[Op.iLike]:`%${search}%`}},
-                {email:{[Op.iLike]:`%${search}%`}},
-                {employeeCode:{[Op.iLike]:`%${search}%`}}
-            ]
+            deleted_at: null,
+
         }
-        const {count,rows}=await Employee.findAndCountAll({
+        if (search) {
+            where[Op.or] = [
+                { first_name: { [Op.iLike]: `%${search}%` } },
+                { last_name: { [Op.iLike]: `%${search}%` } },
+                { personal_email: { [Op.iLike]: `%${search}%` } },
+                { emp_code: { [Op.iLike]: `%${search}%` } }
+            ];
+        }
+        const { count, rows } = await Employee.findAndCountAll({
             where,
-            limit,
+            limit: parseInt(limit),
             offset,
-            attributes:[
+            attributes: [
                 "id",
-                "firstName",
-                "lastName",
-                "email",
-                "employeeCode",
-                "phone",
-                "dateOfJoining",
+                "first_name",
+                "last_name",
+                "personal_email",
+                "emp_code",
+                "phone_primary",
+                "date_of_joining",
                 "status",
-                "profilePicture",
-                "departmentId",
-                "designationId",
-                "managerId",
-                "roleId",
-                "shiftId",
-                "workLocationId",
-                "employmentType",
-                "probationEndDate",
-                "employmentStatus",
-                "terminationDate",
-                "terminationReason",
-                "rehireDate",
-                "rehireReason"
+                "department_id",
+                "designation_id",
+                "manager_id",
+                "work_location_id",
+                "employment_type",
+                "probation_end_date",
+                "date_of_leaving",
+                "exit_reason"
             ]
         });
 
@@ -57,8 +58,8 @@ export const getAllEmployees = async (req, res, next) => {
             message: "Employees fetched successfully",
             data: {
                 count,
-                rows,
-                totalPages: Math.ceil(count / limit),
+                employees: rows,
+                totalPages: Math.ceil(count / parseInt(limit)),
                 currentPage: parseInt(page),
             }
         });
