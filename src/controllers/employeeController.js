@@ -130,7 +130,6 @@ export const updateEmployeeById = async (req, res) => {
             return res.status(404).json({
                 message: "Employee not found",
                 sucess: false,
-                error: err.message
 
             })
         }
