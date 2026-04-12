@@ -73,3 +73,126 @@ export const getAllEmployees = async (req, res) => {
         })
     }
 }
+
+// GET
+// /employees/{id}/
+// HR Admin/Manager/Self
+// Employee detail
+
+export const getEmployeeById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { tenant_id } = req.user;
+        const employee = await Employee.findOne({
+            where: {
+                id,
+                tenant_id
+            }
+        })
+        if (!employee) {
+            return res.status(404).json({
+                message: "Employee not found",
+                success: false
+            })
+        }
+        return res.status(200).json({
+            sucess: false,
+            message: "Employee fetched sucessfklly",
+            data: employee
+
+        })
+
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+}
+
+// PATCH
+// /employees/{id}/
+// HR Admin
+// Update employee info
+export const updateEmployeeById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { tenant_id } = req.user;
+        const { first_name, last_name, date_of_joining } = req.body;
+        const employee = await Employee.findOne({
+            where: {
+                id,
+                tenant_id
+            }
+        })
+        if (!employee) {
+            return res.status(404).json({
+                message: "Employee not found",
+                sucess: false,
+                error: err.message
+
+            })
+        }
+        employee.first_name = first_name;
+        employee.last_name = last_name;
+        employee.date_of_joining = date_of_joining;
+        await employee.save();
+        return res.status(200).json({
+            sucess: true,
+            message: "Employee updated sucessfully",
+            data: employee
+        })
+
+    } catch (err) {
+        console.error(err)
+        return res.status(500).json({
+            message: "Internal Server Error",
+            sucess: true,
+            error: err.message
+        })
+    }
+}
+// DELETE
+// /employees/{id}/
+// HR Admin
+// Soft-delete / terminate employee
+export const deleteEmployeeById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { tenant_id } = req.user;
+        
+        const employee = await Employee.findOne({
+            where: {
+                id,
+                tenant_id
+            }
+        });
+
+        if (!employee) {
+            return res.status(404).json({
+                success: false,
+                message: "Employee not found"
+            });
+        }
+
+        // Use Sequelize's paranoid soft-delete feature
+        await employee.destroy();
+
+        return res.status(200).json({
+            success: true,
+            message: "Employee deleted successfully",
+            data: employee
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: err.message
+        });
+    }
+}
+
+
+
