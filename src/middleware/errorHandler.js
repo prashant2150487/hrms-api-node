@@ -1,6 +1,6 @@
 import { ApiError } from '../utils/apiError.js';
 
-const errorHandler = (err, req, res, ) => {
+const errorHandler = (err, req, res, next) => {
   let { statusCode, message } = err;
 
   if (!(err instanceof ApiError)) {
@@ -14,6 +14,7 @@ const errorHandler = (err, req, res, ) => {
     message,
     stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
   };
+  console.log(next)
 
   res.status(statusCode).json(response);
 };

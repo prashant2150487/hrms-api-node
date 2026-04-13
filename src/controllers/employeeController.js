@@ -147,7 +147,7 @@ export const updateEmployeeById = async (req, res) => {
         console.error(err)
         return res.status(500).json({
             message: "Internal Server Error",
-            sucess: true,
+            sucess: false,
             error: err.message
         })
     }

@@ -75,8 +75,8 @@ export const register = async (req, res, next) => {
 
   } catch (error) {
     await t.rollback();
-    console.error(error)
-    next(new ApiError(500, 'Interval server error', [error.message]));
+    console.error(error);
+    next(new ApiError(500, 'Internal server error', [error.message]));
   }
 
 }
@@ -85,8 +85,9 @@ export const login = async (req, res, next) => {
 
   try {
     const { email, password } = req.body;
+
     if (!email || !password) {
-      return next(new ApiError(400, "All field are required"));
+      return next(new ApiError(400, "All fields are required"));
     }
     const user = await User.findOne({
       where: { email, tenant_id: req.tenant.id },
@@ -116,10 +117,8 @@ export const login = async (req, res, next) => {
     // Prepare permissions list from user.role.permissions
     const permissions = user.role?.permissions?.map(p => p.codename) || [];
 
-    const tenant = await Tenant.findOne({ where: { id: user.tenant_id } });
-    if (!tenant || !tenant.is_active) {
-      return next(new ApiError(403, "Tenant is not active"));
-    }
+    // req.tenant is already validated and confirmed active by tenantMiddleware
+    const tenant = req.tenant;
     const payload = {
       id: user.id,
       tenant_id: user.tenant_id,
@@ -135,8 +134,7 @@ export const login = async (req, res, next) => {
 
   } catch (error) {
     console.error(error);
-    
-    return next(new ApiError(500, "", [error.message]));
+    return next(new ApiError(500, "Internal server error", [error.message]));
   }
 }
 

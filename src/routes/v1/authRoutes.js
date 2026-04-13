@@ -5,8 +5,8 @@ import tenantMiddleware from '../../middleware/tenant.js';
 
 const router = express.Router();
 
-// Public login route (uses tenantMiddleware to identify tenant from headers/body)
-router.post("/login", tenantMiddleware, login)
+// Public login route — tenantMiddleware identifies tenant from header or email lookup
+router.post("/login", tenantMiddleware, login);
 router.post('/register', register);
 
 // Protected routes

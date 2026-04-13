@@ -9,7 +9,9 @@ const tenantMiddleware = async (req, res, next) => {
     try {
       // Find the user across all tenants to identify their tenant
       const users = await User.findAll({ where: { email: req.body.email } });
-
+      if (users.length === 0) {
+        return next(new ApiError(404, 'No account found with this email'));
+      }
       if (users.length === 1) {
         const tenant = await Tenant.findByPk(users[0].tenant_id);
         if (tenant) {
