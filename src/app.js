@@ -1,6 +1,7 @@
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import { ApiResponse } from './utils/apiResponse.js';
 import errorHandler from './middleware/errorHandler.js';
@@ -17,6 +18,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 const limiter = rateLimit({
   windowMs: 60 * 1000,
