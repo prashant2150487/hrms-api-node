@@ -162,7 +162,35 @@ export const getMe = async (req, res, next) => {
     if (!req.user) {
       return next(new ApiError(401, "User not authenticated"));
     }
-    return res.status(200).json(new ApiResponse(200, req.user, "User details fetched successfully"));
+
+    const { tenant_id, id } = req.user;
+
+    const [employeeDetails, userDetails] = await Promise.all([
+      Employee.findOne({ where: { tenant_id, user_id: id } }),
+      User.findOne({
+        where: { id },
+        attributes: { exclude: ['password_hash', 'refresh_token'] },
+        include: [
+          {
+            model: Role,
+            as: 'role',
+            include: [
+              {
+                model: Permission,
+                as: 'permissions',
+                through: { attributes: [] }  // hide junction table fields
+              }
+            ]
+          }
+        ]
+      })
+    ]);
+
+    const permissions = userDetails?.role?.permissions?.map(p => p.codename) || [];
+
+    return res.status(200).json(
+      new ApiResponse(200, { userDetails, employeeDetails, permissions }, "User details fetched successfully")
+    );
   } catch (error) {
     console.error(error);
     return next(new ApiError(500, "Internal server error", [error.message]));
