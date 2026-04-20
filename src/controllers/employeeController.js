@@ -1,7 +1,8 @@
 import Employee from "../models/employeemodel.js";
 import { Op } from "sequelize";
-
-
+import Role from "../models/roleModel.js";
+import User from "../models/userModel.js";
+import bcrypt from 'bcryptjs'; // Add this import
 
 // GET
 // /employees/
@@ -160,7 +161,7 @@ export const deleteEmployeeById = async (req, res) => {
     try {
         const { id } = req.params;
         const { tenant_id } = req.user;
-        
+
         const employee = await Employee.findOne({
             where: {
                 id,
@@ -192,6 +193,95 @@ export const deleteEmployeeById = async (req, res) => {
         });
     }
 }
+// POST
+// /employees/
+// HR Admin
+// Create employee profile
+
+export const createEmployee = async (req, res) => {
+    try {
+        const { tenant_id } = req.user;
+        const { first_name, last_name, email, personal_email, emp_code, phone_primary, date_of_joining, employment_type = 'full_time', role_id } = req.body;
+
+        // Basic validation for required fields
+        if (!first_name || !last_name || !emp_code || !date_of_joining || !email || !role_id) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required fields: first_name, last_name, emp_code, date_of_joining, email, role_id"
+            });
+        }
+
+        // Check if emp_code already exists
+        const existingEmployee = await Employee.findOne({
+            where: {
+                emp_code,
+                tenant_id
+            }
+        });
+        if (existingEmployee) {
+            return res.status(409).json({
+                success: false,
+                message: "Employee code already exists"
+            });
+        }
+
+        // Check if email already exists
+        const existingUser = await User.findOne({
+            where: { email, tenant_id }
+        });
+        if (existingUser) {
+            return res.status(409).json({
+                success: false,
+                message: "Email already exists"
+            });
+        }
+
+        const role = await Role.findOne({ where: { id: role_id } });
+        if (!role) {
+            return res.status(404).json({
+                success: false,
+                message: "Role not found"
+            });
+        }
+
+        // Generate secure password (placeholder - implement proper generation)
+        const salt = await bcrypt.genSalt(10);
+        const defaultPassword = "temporary_password"; // Replace with secure generation
+        const password_hash = await bcrypt.hash(defaultPassword, salt);
+
+        const user = await User.create({
+            email,
+            tenant_id,
+            password_hash,
+            role_id: role.id
+        });
+
+        const newEmployee = await Employee.create({
+            tenant_id,
+            user_id: user.id,
+            first_name,
+            last_name,
+            personal_email,
+            emp_code,
+            phone_primary,
+            date_of_joining,
+            employment_type,
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: "Employee created successfully",
+            data: newEmployee
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message: "Internal Server Error",
+            success: false,
+            error: err.message
+        });
+    }
+};
 
 
 

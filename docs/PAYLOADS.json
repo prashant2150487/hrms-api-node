@@ -1,0 +1,279 @@
+{
+  "createEmployee": {
+    "endpoint": "POST /api/v1/employees",
+    "description": "Create a new employee profile",
+    "authentication": "Required (Bearer Token)",
+    "authorization": "admin, hr_admin",
+    "permission": "employees:create",
+    "request": {
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer <your_jwt_token>"
+      },
+      "body": {
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john.doe@company.com",
+        "personal_email": "john.personal@gmail.com",
+        "emp_code": "EMP001",
+        "phone_primary": "+1-555-0123",
+        "date_of_joining": "2026-05-01",
+        "employment_type": "full_time",
+        "role_id": 2
+      }
+    },
+    "response": {
+      "success": {
+        "status": 201,
+        "body": {
+          "success": true,
+          "message": "Employee created successfully",
+          "data": {
+            "id": 1,
+            "tenant_id": 1,
+            "user_id": 5,
+            "first_name": "John",
+            "last_name": "Doe",
+            "personal_email": "john.personal@gmail.com",
+            "emp_code": "EMP001",
+            "phone_primary": "+1-555-0123",
+            "date_of_joining": "2026-05-01",
+            "employment_type": "full_time"
+          }
+        }
+      },
+      "errors": [
+        {
+          "status": 400,
+          "message": "Missing required fields: first_name, last_name, emp_code, date_of_joining, email, role_id"
+        },
+        {
+          "status": 404,
+          "message": "Role not found"
+        },
+        {
+          "status": 409,
+          "message": "Employee code already exists"
+        },
+        {
+          "status": 409,
+          "message": "Email already exists"
+        }
+      ]
+    }
+  },
+  "getAllEmployees": {
+    "endpoint": "GET /api/v1/employees",
+    "description": "Fetch all employees with pagination and search",
+    "authentication": "Required (Bearer Token)",
+    "authorization": "admin, hr_admin, manager",
+    "permission": "employees:read",
+    "request": {
+      "query_params": {
+        "page": 1,
+        "limit": 10,
+        "search": ""
+      }
+    },
+    "response": {
+      "success": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "Employees fetched successfully",
+          "data": {
+            "count": 25,
+            "totalPages": 3,
+            "currentPage": 1,
+            "employees": [
+              {
+                "id": 1,
+                "first_name": "John",
+                "last_name": "Doe",
+                "personal_email": "john.personal@gmail.com",
+                "emp_code": "EMP001",
+                "phone_primary": "+1-555-0123",
+                "date_of_joining": "2026-05-01",
+                "status": "active",
+                "employment_type": "full_time"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "getEmployeeById": {
+    "endpoint": "GET /api/v1/employees/{id}",
+    "description": "Fetch a single employee by ID",
+    "authentication": "Required (Bearer Token)",
+    "authorization": "admin, hr_admin, manager, self",
+    "permission": "employees:read",
+    "request": {
+      "path_params": {
+        "id": 1
+      }
+    },
+    "response": {
+      "success": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "Employee fetched successfully",
+          "data": {
+            "id": 1,
+            "tenant_id": 1,
+            "user_id": 5,
+            "first_name": "John",
+            "last_name": "Doe",
+            "personal_email": "john.personal@gmail.com",
+            "emp_code": "EMP001",
+            "phone_primary": "+1-555-0123",
+            "date_of_joining": "2026-05-01",
+            "status": "active",
+            "employment_type": "full_time"
+          }
+        }
+      },
+      "errors": [
+        {
+          "status": 404,
+          "message": "Employee not found"
+        }
+      ]
+    }
+  },
+  "updateEmployee": {
+    "endpoint": "PATCH /api/v1/employees/{id}",
+    "description": "Update employee information",
+    "authentication": "Required (Bearer Token)",
+    "authorization": "admin, hr_admin",
+    "permission": "employees:update",
+    "request": {
+      "path_params": {
+        "id": 1
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer <your_jwt_token>"
+      },
+      "body": {
+        "first_name": "Jonathan",
+        "last_name": "Smith",
+        "date_of_joining": "2026-05-01"
+      }
+    },
+    "response": {
+      "success": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "Employee updated successfully",
+          "data": {
+            "id": 1,
+            "first_name": "Jonathan",
+            "last_name": "Smith",
+            "date_of_joining": "2026-05-01"
+          }
+        }
+      },
+      "errors": [
+        {
+          "status": 404,
+          "message": "Employee not found"
+        }
+      ]
+    }
+  },
+  "deleteEmployee": {
+    "endpoint": "DELETE /api/v1/employees/{id}",
+    "description": "Soft delete an employee (sets deleted_at timestamp)",
+    "authentication": "Required (Bearer Token)",
+    "authorization": "admin, hr_admin",
+    "permission": "employees:delete",
+    "request": {
+      "path_params": {
+        "id": 1
+      },
+      "headers": {
+        "Authorization": "Bearer <your_jwt_token>"
+      }
+    },
+    "response": {
+      "success": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "Employee deleted successfully",
+          "data": {
+            "id": 1,
+            "tenant_id": 1,
+            "deleted_at": "2026-04-20T12:00:00.000Z"
+          }
+        }
+      },
+      "errors": [
+        {
+          "status": 404,
+          "message": "Employee not found"
+        }
+      ]
+    }
+  },
+  "fieldDefinitions": {
+    "first_name": {
+      "type": "string",
+      "required": true,
+      "example": "John",
+      "constraints": "Max 50 characters"
+    },
+    "last_name": {
+      "type": "string",
+      "required": true,
+      "example": "Doe",
+      "constraints": "Max 50 characters"
+    },
+    "email": {
+      "type": "string",
+      "required": true,
+      "example": "john.doe@company.com",
+      "constraints": "Must be unique within tenant, valid email format"
+    },
+    "personal_email": {
+      "type": "string",
+      "required": false,
+      "example": "john.personal@gmail.com",
+      "constraints": "Valid email format"
+    },
+    "emp_code": {
+      "type": "string",
+      "required": true,
+      "example": "EMP001",
+      "constraints": "Must be unique within tenant, alphanumeric"
+    },
+    "phone_primary": {
+      "type": "string",
+      "required": false,
+      "example": "+1-555-0123",
+      "constraints": "Valid phone format"
+    },
+    "date_of_joining": {
+      "type": "date",
+      "required": true,
+      "format": "YYYY-MM-DD",
+      "example": "2026-05-01"
+    },
+    "employment_type": {
+      "type": "string",
+      "required": false,
+      "default": "full_time",
+      "options": ["full_time", "part_time", "contract", "intern"]
+    },
+    "role_id": {
+      "type": "number",
+      "required": true,
+      "example": 2,
+      "constraints": "Must exist in roles table"
+    }
+  }
+}
