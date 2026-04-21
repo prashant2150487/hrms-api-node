@@ -201,27 +201,13 @@ export const deleteEmployeeById = async (req, res) => {
 export const createEmployee = async (req, res) => {
     try {
         const { tenant_id } = req.user;
-        const { first_name, last_name, email, personal_email, emp_code, phone_primary, date_of_joining, employment_type = 'full_time', role_id } = req.body;
+        const { first_name, last_name, email, personal_email, phone_primary, date_of_joining, employment_type = 'full_time', role_id } = req.body;
 
         // Basic validation for required fields
-        if (!first_name || !last_name || !emp_code || !date_of_joining || !email || !role_id) {
+        if (!first_name || !last_name || !date_of_joining || !email || !role_id) {
             return res.status(400).json({
                 success: false,
-                message: "Missing required fields: first_name, last_name, emp_code, date_of_joining, email, role_id"
-            });
-        }
-
-        // Check if emp_code already exists
-        const existingEmployee = await Employee.findOne({
-            where: {
-                emp_code,
-                tenant_id
-            }
-        });
-        if (existingEmployee) {
-            return res.status(409).json({
-                success: false,
-                message: "Employee code already exists"
+                message: "Missing required fields: first_name, last_name, date_of_joining, email, role_id"
             });
         }
 
@@ -262,7 +248,7 @@ export const createEmployee = async (req, res) => {
             first_name,
             last_name,
             personal_email,
-            emp_code,
+            emp_code:`EMP-${Math.floor(1000 + Math.random() * 9000)}`,
             phone_primary,
             date_of_joining,
             employment_type,
@@ -271,7 +257,7 @@ export const createEmployee = async (req, res) => {
         return res.status(201).json({
             success: true,
             message: "Employee created successfully",
-            data: newEmployee
+            data: null
         });
     } catch (err) {
         console.error(err);
