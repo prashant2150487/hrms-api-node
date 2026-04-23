@@ -9,6 +9,7 @@
     "yarn": ">=1.22.0"
   },
   "dependencies": {
+    "aws-sdk": "^2.1700.0",
     "bcryptjs": "^3.0.3",
     "bullmq": "^5.71.0",
     "cookie-parser": "^1.4.7",
@@ -23,15 +24,22 @@
     "pg-hstore": "^2.3.4",
     "redis": "^5.11.0",
     "sequelize": "^6.37.8",
+    "serverless-http": "^4.0.0",
     "winston": "^3.19.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/jest": "^30.0.0",
+    "@types/node": "^20.0.0",
+    "aws-cdk": "^2.150.0",
+    "aws-sam-cli": "^1.121.0",
     "eslint": "^10.1.0",
     "jest": "^30.3.0",
     "nodemon": "^3.1.14",
+    "serverless": "^4.0.0",
+    "serverless-offline": "^14.2.0",
+    "serverless-plugin-tracing": "^2.2.0",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.9"
   },
@@ -42,6 +50,17 @@
     "test": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest",
     "test:watch": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest --watch",
     "lint": "eslint src",
-    "lint:fix": "eslint src --fix"
+    "lint:fix": "eslint src --fix",
+    "lambda:build": "npm install --production && sam build",
+    "lambda:deploy:dev": "sam deploy --stack-name hrms-api-dev --s3-prefix hrms-api-dev --parameter-overrides Environment=dev",
+    "lambda:deploy:staging": "sam deploy --stack-name hrms-api-staging --s3-prefix hrms-api-staging --parameter-overrides Environment=staging",
+    "lambda:deploy:prod": "sam deploy --stack-name hrms-api-prod --s3-prefix hrms-api-prod --parameter-overrides Environment=prod",
+    "lambda:local": "sam local start-api --port 3001",
+    "serverless:deploy:dev": "serverless deploy --stage dev",
+    "serverless:deploy:staging": "serverless deploy --stage staging",
+    "serverless:deploy:prod": "serverless deploy --stage prod",
+    "serverless:local": "serverless offline start",
+    "serverless:logs": "serverless logs -f api --tail",
+    "serverless:remove": "serverless remove"
   }
 }
