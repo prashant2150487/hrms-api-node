@@ -14,4 +14,5 @@ router.get("/:role_id/permission", auth, abac("roles:read", { allowedRoles: ["ad
 router.get("/permission", auth, abac("role:read", { allowedRoles: ["admin", "hr_admin", "super_admin"] }), getAllPermissions)
 router.patch("/:role_id/permission", auth, abac("roles:update", { allowedRoles: ["admin", "hr_admin"] }), setPermissionOnRole)
 
+
 export default router

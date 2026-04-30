@@ -184,7 +184,7 @@ export const deleteEmployeeById = async (req, res) => {
                 tenant_id,
                 deleted_at: null
             },
-            
+
         });
 
         if (!employee) {
@@ -291,7 +291,7 @@ export const createEmployee = async (req, res) => {
             role_id: role.id
         });
 
-        const newEmployee = await Employee.create({
+        await Employee.create({
             tenant_id,
             user_id: user.id,
             first_name,

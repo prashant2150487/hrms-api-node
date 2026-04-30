@@ -196,3 +196,46 @@ export const getMe = async (req, res, next) => {
     return next(new ApiError(500, "Internal server error", [error.message]));
   }
 }
+export const refreshToken = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.cookies;
+    if (!refreshToken) {
+      return next(new ApiError(401, "Refresh token missing"));
+    }
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    const user = await User.findOne({ where: { id: decoded.id, refresh_token: refreshToken } });
+    if (!user) {
+      return next(new ApiError(401, "Invalid refresh token"));
+
+    }
+    const tenant = await Tenant.findOne({
+      where: {
+        id: decoded.tenant_id,
+        is_active: true,
+
+      }
+    });
+    if (!tenant) {
+      return next(new ApiError(401, "Tenant is not active"))
+    }
+    const payload = {
+      id: user.id,
+      tenant_id: user.tenant_id,
+      role_id: user.role_id,
+      email: user.email,
+      subdomain: tenant.subdomain,
+    }
+    const newAccessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRY });
+    res.cookie("accessToken", newAccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 15 * 60 * 1000, // 15 min
+    });
+    return res.status(200).json(new ApiResponse(200, { accessToken: newAccessToken }, "Access token refreshed successfully"));
+  }
+  catch (error) {
+    console.error(error);
+    return next(new ApiError(500, "Internal server error", [error.message]));
+  }
+}
