@@ -3,7 +3,6 @@ import sequelize from '../config/database.js';
 import Tenant from './tenatModel.js';
 
 const Department = sequelize.define('Department', {
-  // INT AUTO_INCREMENT — NOT UUID (schema: id INT PK AI NN)
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,

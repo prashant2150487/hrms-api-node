@@ -3,6 +3,8 @@ import { Op } from "sequelize";
 import Role from "../models/roleModel.js";
 import User from "../models/userModel.js";
 import bcrypt from 'bcryptjs'; // Add this import
+import Department from "../models/departmentmodel.js";
+import Designation from "../models/designationModel.js";
 
 // GET
 // /employees/
@@ -22,7 +24,7 @@ export const getAllEmployees = async (req, res) => {
             deleted_at: null,
 
         }
-        if (search) {
+        if (search.trim()) {
             where[Op.or] = [
                 { first_name: { [Op.iLike]: `%${search}%` } },
                 { last_name: { [Op.iLike]: `%${search}%` } },
@@ -51,7 +53,18 @@ export const getAllEmployees = async (req, res) => {
                 "probation_end_date",
                 "date_of_leaving",
                 "exit_reason"
-            ]
+            ],
+            include: [
+                {
+                    model: Department,
+                    attributes: ["id", "name"]
+                },
+                {
+                    model: Designation,
+                    attributes: ["id", "title"]
+                }
+            ],
+            order: [["created_at", "DESC"]]
         });
 
         return res.status(200).json({
@@ -62,6 +75,8 @@ export const getAllEmployees = async (req, res) => {
                 employees: rows,
                 totalPages: Math.ceil(count / parseInt(limit)),
                 currentPage: parseInt(page),
+                hasNext: offset + parseInt(limit) < count,
+                hasPrevPage: offset > 0
             }
         });
     } catch (err) {
@@ -97,8 +112,8 @@ export const getEmployeeById = async (req, res) => {
             })
         }
         return res.status(200).json({
-            sucess: false,
-            message: "Employee fetched sucessfklly",
+            success: true,
+            message: "Employee fetched successfully",
             data: employee
 
         })
@@ -139,7 +154,7 @@ export const updateEmployeeById = async (req, res) => {
         employee.date_of_joining = date_of_joining;
         await employee.save();
         return res.status(200).json({
-            sucess: true,
+            success: true,
             message: "Employee updated sucessfully",
             data: employee
         })
@@ -148,7 +163,7 @@ export const updateEmployeeById = async (req, res) => {
         console.error(err)
         return res.status(500).json({
             message: "Internal Server Error",
-            sucess: false,
+            success: false,
             error: err.message
         })
     }
@@ -161,12 +176,15 @@ export const deleteEmployeeById = async (req, res) => {
     try {
         const { id } = req.params;
         const { tenant_id } = req.user;
+        const { exit_reason, exit_notes } = req.body;
 
         const employee = await Employee.findOne({
             where: {
                 id,
-                tenant_id
-            }
+                tenant_id,
+                deleted_at: null
+            },
+            
         });
 
         if (!employee) {
@@ -176,13 +194,44 @@ export const deleteEmployeeById = async (req, res) => {
             });
         }
 
+
+        employee.status = "terminated"
+        employee.date_of_leaving = new Date();
+        employee.exit_reason = exit_reason || 'Termination';
+        employee.exit_notes = exit_notes || 'Employee deleted by admin';
+        await employee.save();
+
         // Use Sequelize's paranoid soft-delete feature
         await employee.destroy();
+        if (employee.user_id) {
+            const [updatedCount] = await User.update(
+                { is_active: false },
+                {
+                    where: {
+                        id: employee.user_id,
+                        tenant_id: tenant_id  // Extra safety
+                    }
+                }
+            );
+
+            // Log if user wasn't found or wasn't updated
+            if (updatedCount === 0) {
+                console.warn(`User with ID ${employee.user_id} not found or already inactive`);
+            } else {
+                console.log(`User ${employee.user_id} deactivated successfully`);
+            }
+        }
 
         return res.status(200).json({
             success: true,
             message: "Employee deleted successfully",
-            data: employee
+            data: {
+                id: employee.id,
+                emp_code: employee.emp_code,
+                status: employee.status,
+                date_of_leaving: employee.date_of_leaving
+
+            }
         });
     } catch (err) {
         console.error(err);
@@ -248,7 +297,7 @@ export const createEmployee = async (req, res) => {
             first_name,
             last_name,
             personal_email,
-            emp_code:`EMP-${Math.floor(1000 + Math.random() * 9000)}`,
+            emp_code: `EMP-${Math.floor(1000 + Math.random() * 9000)}`,
             phone_primary,
             date_of_joining,
             employment_type,

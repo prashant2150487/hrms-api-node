@@ -34,11 +34,11 @@ const Employee = sequelize.define('Employee', {
   // ── Personal Info ───────────────────────────────────────────
   first_name: {
     type: DataTypes.STRING(80),
-    allowNull: false,
+    allowNull: true,
   },
   last_name: {
     type: DataTypes.STRING(80),
-    allowNull: false,
+    allowNull: true,
   },
   middle_name: {
     type: DataTypes.STRING(80),
@@ -162,7 +162,7 @@ const Employee = sequelize.define('Employee', {
   },
   date_of_joining: {
     type: DataTypes.DATEONLY,
-    allowNull: false,
+    allowNull: true
   },
   probation_end_date: {
     type: DataTypes.DATEONLY,
