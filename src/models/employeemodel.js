@@ -7,19 +7,19 @@ import Designation from './designationModel.js';
 
 const Employee = sequelize.define('Employee', {
   id: {
-    type: DataTypes.CHAR(36),
+    type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
   // Every employee belongs to a tenant directly (not just via user)
   tenant_id: {
-    type: DataTypes.CHAR(36),
+    type: DataTypes.UUID,
     allowNull: false,
     references: { model: 'tenants', key: 'id' },
   },
   // 1:1 with users table
   user_id: {
-    type: DataTypes.CHAR(36),
+    type: DataTypes.UUID,
     allowNull: false,
     unique: true,
     references: { model: 'users', key: 'id' },
@@ -123,13 +123,11 @@ const Employee = sequelize.define('Employee', {
   },
 
   // ── Org Assignment ──────────────────────────────────────────
-  // INT FK — matches departments.id (INT)
   department_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     allowNull: true,
     references: { model: 'departments', key: 'id' },
   },
-  // INT FK — matches designations.id (INT)
   designation_id: {
     type: DataTypes.INTEGER,
     allowNull: true,
@@ -143,7 +141,7 @@ const Employee = sequelize.define('Employee', {
   },
   // Self-referencing FK for reporting line
   manager_id: {
-    type: DataTypes.CHAR(36),
+    type: DataTypes.UUID,
     allowNull: true,
     references: { model: 'employees', key: 'id' },
   },

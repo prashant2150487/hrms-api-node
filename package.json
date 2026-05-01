@@ -51,16 +51,7 @@
     "test:watch": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest --watch",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "lambda:build": "npm install --production && sam build",
-    "lambda:deploy:dev": "sam deploy --stack-name hrms-api-dev --s3-prefix hrms-api-dev --parameter-overrides Environment=dev",
-    "lambda:deploy:staging": "sam deploy --stack-name hrms-api-staging --s3-prefix hrms-api-staging --parameter-overrides Environment=staging",
-    "lambda:deploy:prod": "sam deploy --stack-name hrms-api-prod --s3-prefix hrms-api-prod --parameter-overrides Environment=prod",
-    "lambda:local": "sam local start-api --port 3001",
-    "serverless:deploy:dev": "serverless deploy --stage dev",
-    "serverless:deploy:staging": "serverless deploy --stage staging",
-    "serverless:deploy:prod": "serverless deploy --stage prod",
-    "serverless:local": "serverless offline start",
-    "serverless:logs": "serverless logs -f api --tail",
-    "serverless:remove": "serverless remove"
+    
+    "seed:roles": "node src/seeders/rolePermissionSeeder.js"
   }
 }

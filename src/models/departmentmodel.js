@@ -2,17 +2,23 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 import Tenant from './tenatModel.js';
 
+// type: DataTypes.CHAR(36),
+// defaultValue: DataTypes.UUIDV4,
+
 const Department = sequelize.define('Department', {
   id: {
-    type: DataTypes.INTEGER,
+   type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
-    autoIncrement: true,
     allowNull: false,
   },
   tenant_id: {
-    type: DataTypes.CHAR(36),
+   type: DataTypes.UUID,
     allowNull: false,
-    references: { model: 'tenants', key: 'id' },
+    references: {
+      model: Tenant,
+      key: 'id',
+    },
   },
   name: {
     type: DataTypes.STRING(120),
@@ -23,19 +29,16 @@ const Department = sequelize.define('Department', {
     type: DataTypes.STRING(20),
     allowNull: true,
   },
-  // Self-referencing FK for org hierarchy — INT to match id type
   parent_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     allowNull: true,
     references: { model: 'departments', key: 'id' },
   },
-  // FK to employees.id — schema column is head_employee_id (not head_id)
   head_employee_id: {
-    type: DataTypes.CHAR(36),
+    type: DataTypes.UUID,
     allowNull: true,
     references: { model: 'employees', key: 'id' },
   },
-  // GL cost centre code
   cost_centre: {
     type: DataTypes.STRING(50),
     allowNull: true,

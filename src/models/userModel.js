@@ -5,12 +5,12 @@ import Role from './roleModel.js';
 
 const User = sequelize.define('User', {
   id: {
-    type: DataTypes.CHAR(36),
+    type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
   tenant_id: {
-    type: DataTypes.CHAR(36),
+    type: DataTypes.UUID,
     allowNull: false,
     references: {
       model: 'tenants',

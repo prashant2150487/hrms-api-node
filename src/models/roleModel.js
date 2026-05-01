@@ -10,7 +10,7 @@ const Role = sequelize.define('Role', {
         allowNull: false
     },
     tenant_id: {
-        type: DataTypes.CHAR(36),
+        type: DataTypes.UUID,
         allowNull: true,
         references: {
             model: 'tenants',

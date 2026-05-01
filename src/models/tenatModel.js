@@ -3,7 +3,7 @@ import sequelize from '../config/database.js';
 
 const Tenant = sequelize.define('Tenant', {
   id: {
-    type: DataTypes.CHAR(36),
+    type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },

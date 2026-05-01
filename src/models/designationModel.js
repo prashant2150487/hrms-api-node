@@ -12,13 +12,12 @@ const Designation = sequelize.define('Designation', {
     allowNull: false,
   },
   tenant_id: {
-    type: DataTypes.CHAR(36),
+    type: DataTypes.UUID,
     allowNull: false,
     references: { model: 'tenants', key: 'id' },
   },
-  // INT FK to match departments.id type
   department_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     allowNull: true,
     references: { model: 'departments', key: 'id' },
   },
