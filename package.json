@@ -9,7 +9,6 @@
     "yarn": ">=1.22.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.1700.0",
     "bcryptjs": "^3.0.3",
     "bullmq": "^5.71.0",
     "cookie-parser": "^1.4.7",
@@ -24,7 +23,6 @@
     "pg-hstore": "^2.3.4",
     "redis": "^5.11.0",
     "sequelize": "^6.37.8",
-    "serverless-http": "^4.0.0",
     "winston": "^3.19.0",
     "xlsx": "^0.18.5"
   },
@@ -32,14 +30,9 @@
     "@eslint/js": "^10.0.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
-    "aws-cdk": "^2.150.0",
-    "aws-sam-cli": "^1.121.0",
     "eslint": "^10.1.0",
     "jest": "^30.3.0",
     "nodemon": "^3.1.14",
-    "serverless": "^4.0.0",
-    "serverless-offline": "^14.2.0",
-    "serverless-plugin-tracing": "^2.2.0",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.9"
   },
@@ -51,7 +44,6 @@
     "test:watch": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest --watch",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    
     "seed:roles": "node src/seeders/rolePermissionSeeder.js"
   }
 }
