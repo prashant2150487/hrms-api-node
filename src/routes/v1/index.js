@@ -5,6 +5,7 @@ import userRoutes from "./userRoutes.js"
 import roleRoutes from './roleRoutes.js';
 import employeeRoutes from './employeeRoutes.js';
 import departmentsRoutes from "./departmentsRoutes.js"
+import designationRoutes from "./designationRoutes.js";
 
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.use('/users', userRoutes)
 router.use('/roles', roleRoutes)
 router.use('/employees', employeeRoutes)
 router.use('/departments', departmentsRoutes);
+router.use("/designations", designationRoutes);
 
 
 export default router;

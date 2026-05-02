@@ -309,6 +309,43 @@ export const updateDepartment = async (req, res) => {
         })
     }
 }
+export const deleteDepartment = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { tenant_id } = req.user;
+        const department = await Department.findOne({
+            where: {
+                id,
+                tenant_id,
+                is_active: 1
+
+            }
+        })
+        if (!department) {
+            return res.status(404).json({
+                success: false,
+                message: "Department not found",
+                data: null
+            })
+        }
+        // Soft delete by marking inactive rather than removing the row
+        await department.update({ is_active: 0 });
+        return res.status(200).json({
+            success: true,
+            message: "Department deleted successfully",
+            data: null
+        })
+
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            data: null
+        });
+    }
+}
 
 
 
