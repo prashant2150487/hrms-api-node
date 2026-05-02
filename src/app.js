@@ -1,21 +1,22 @@
-import express from 'express';
-import helmet from 'helmet';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import rateLimit from 'express-rate-limit';
-import { ApiResponse } from './utils/apiResponse.js';
-import errorHandler from './middleware/errorHandler.js';
+import express from "express";
+import helmet from "helmet";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import rateLimit from "express-rate-limit";
+import { ApiResponse } from "./utils/apiResponse.js";
+import errorHandler from "./middleware/errorHandler.js";
 
-import v1Routes from './routes/v1/index.js';
+import v1Routes from "./routes/v1/index.js";
 
 const app = express();
 
 app.use(helmet());
-app.use(cors({
-  origin: [
-    process.env.CLIENT_URL
-  ], credentials: true
-}));
+app.use(
+  cors({
+    origin: [process.env.CLIENT_URL],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -29,10 +30,12 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Routes
-app.use('/api/v1', v1Routes);
+app.use("/api/v1", v1Routes);
 
-app.get('/health', (req, res) => {
-  res.status(200).json(new ApiResponse(200, { status: 'ok' }, 'HRMS API is healthy'));
+app.get("/health", (req, res) => {
+  res
+    .status(200)
+    .json(new ApiResponse(200, { status: "ok" }, "HRMS API is healthy"));
 });
 
 // Global Error Handler

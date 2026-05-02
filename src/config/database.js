@@ -1,7 +1,7 @@
-import { Sequelize } from 'sequelize';
-import 'dotenv/config';
+import { Sequelize } from "sequelize";
+import "dotenv/config";
 
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.NODE_ENV || "development";
 
 const config = {
   development: {
@@ -9,15 +9,15 @@ const config = {
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
-    dialect: 'postgres',
-    logging: process.env.DB_LOGGING === 'true' ? console.log : false,
+    dialect: "postgres",
+    logging: process.env.DB_LOGGING === "true" ? console.log : false,
   },
   test: {
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
-    database: process.env.DB_NAME_TEST || 'hrms_test',
+    database: process.env.DB_NAME_TEST || "hrms_test",
     host: process.env.DB_HOST,
-    dialect: 'postgres',
+    dialect: "postgres",
     logging: false,
   },
   production: {
@@ -25,7 +25,7 @@ const config = {
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
-    dialect: 'postgres',
+    dialect: "postgres",
     logging: false,
     dialectOptions: {
       ssl: {
