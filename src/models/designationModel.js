@@ -7,7 +7,8 @@ const Designation = sequelize.define(
   "Designation",
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
       autoIncrement: true,
       allowNull: false,
@@ -25,6 +26,7 @@ const Designation = sequelize.define(
     title: {
       type: DataTypes.STRING(120),
       allowNull: false,
+      unique: "title should be unique within a tenant",
     },
     // Schema ENUM (note: c_level with underscore, includes intern and director)
     level: {
@@ -60,7 +62,7 @@ const Designation = sequelize.define(
     modelName: "Designation",
     tableName: "designations",
     timestamps: true,
-    updatedAt: false, // schema only defines created_at
+    updatedAt: false,
     createdAt: "created_at",
     underscored: true,
     indexes: [{ fields: ["tenant_id"] }, { fields: ["department_id"] }],
