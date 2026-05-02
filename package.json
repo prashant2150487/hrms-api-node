@@ -31,8 +31,13 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
     "eslint": "^10.1.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "husky": "^9.1.7",
     "jest": "^30.3.0",
+    "lint-staged": "^16.4.0",
     "nodemon": "^3.1.14",
+    "prettier": "^3.8.3",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.9"
   },
@@ -44,6 +49,13 @@
     "test:watch": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest --watch",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "seed:roles": "node src/seeders/rolePermissionSeeder.js"
+    "seed:roles": "node src/seeders/rolePermissionSeeder.js",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   }
 }

@@ -1,8 +1,14 @@
 import js from "@eslint/js";
+import prettierConfig from "eslint-config-prettier";
+import prettierPlugin from "eslint-plugin-prettier";
 
 export default [
   js.configs.recommended,
+  prettierConfig,
   {
+    plugins: {
+      prettier: prettierPlugin
+    },
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -23,7 +29,8 @@ export default [
     },
     rules: {
       "no-unused-vars": "warn",
-      "no-console": "off"
+      "no-console": "off",
+      "prettier/prettier": "error"
     }
   }
 ];
