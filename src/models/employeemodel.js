@@ -131,7 +131,7 @@ const Employee = sequelize.define(
       references: { model: "departments", key: "id" },
     },
     designation_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: true,
       references: { model: "designations", key: "id" },
     },

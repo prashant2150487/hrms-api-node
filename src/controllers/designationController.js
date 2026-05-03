@@ -104,6 +104,7 @@ export const createDesignation = async (req, res) => {
       where: {
         title: title.trim(),
         tenant_id,
+        is_active: 1,
       },
     });
 
@@ -120,8 +121,8 @@ export const createDesignation = async (req, res) => {
       title: title.trim(),
       level: level.trim().toLowerCase(),
       department_id: department_id || null,
-      salary_band_min,
-      salary_band_max,
+      salary_band_min: salary_band_min || null,
+      salary_band_max: salary_band_max || null,
     });
 
     return res.status(201).json({
@@ -144,10 +145,16 @@ export const getDesignationById = async (req, res) => {
     const { id } = req.params;
     const designation = await Designation.findOne({
       where: {
-        tenant_id,
         id,
+        tenant_id,
         is_active: 1,
       },
+      include: [
+        {
+          model: Department,
+          attributes: ["id", "name"],
+        },
+      ],
     });
 
     if (!designation) {
@@ -167,6 +174,83 @@ export const getDesignationById = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Internal server error",
+    });
+  }
+};
+
+export const updateDesignation = async (req, res) => {
+  try {
+    const { tenant_id } = req.user;
+    const { id } = req.params;
+    const { title, level, department_id } = req.body;
+    const designation = await Designation.findOne({
+      where: {
+        id,
+        tenant_id,
+        is_active: 1,
+      },
+    });
+    if (!designation) {
+      return res.status(404).json({
+        success: false,
+        message: "Designation not found",
+      });
+    }
+    if (title) {
+      designation.title = title;
+    }
+    if (level) {
+      designation.level = level;
+    }
+    if (designation.department_id) {
+      designation.department_id = department_id;
+    }
+    await designation.save();
+    return res.status(200).json({
+      success: true,
+      message: "Designation update successfully",
+      data: designation,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+export const deleteDesignation = async (req, res) => {
+  try {
+    const { tenant_id } = req.user;
+    const { id } = req.params;
+
+    const designation = await Designation.findOne({
+      where: {
+        id,
+        tenant_id,
+        is_active: 1,
+      },
+    });
+    if (!designation) {
+      return res.status(404).json({
+        success: false,
+        message: "Designation not found",
+      });
+    }
+    designation.is_active = 0;
+    await designation.save();
+    return res.status(200).json({
+      success: true,
+      message: "Designation deleted sucessfully",
+      data: designation,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: err.message,
     });
   }
 };
