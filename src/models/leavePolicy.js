@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../../config/database.js";
-import Tenant from "../tenatModel.js";
+import sequelize from "../config/database.js";
+import Tenant from "./tenatModel.js";
 
 const LeavePolicy = sequelize.define(
   "LeavePolicy",
@@ -36,6 +36,10 @@ const LeavePolicy = sequelize.define(
     carryover_limit: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+    },
+    is_active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
     },
     applicable_to: {
       type: DataTypes.JSONB, // e.g., { gender: 'female', employment_type: 'full-time' }

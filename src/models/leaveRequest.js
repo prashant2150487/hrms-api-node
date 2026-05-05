@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../../config/database.js";
-import Employee from "../employeemodel.js";
+import sequelize from "../config/database.js";
+import Employee from "./employeemodel.js";
 import LeavePolicy from "./leavePolicy.js";
 
 const LeaveRequest = sequelize.define(
@@ -15,7 +15,7 @@ const LeaveRequest = sequelize.define(
       type: DataTypes.UUID,
       allowNull: false,
       references: {
-        model: "employees",
+        model: Employee,
         key: "id",
       },
     },
@@ -23,7 +23,7 @@ const LeaveRequest = sequelize.define(
       type: DataTypes.UUID,
       allowNull: false,
       references: {
-        model: "leave_policies",
+        model: LeavePolicy,
         key: "id",
       },
     },
@@ -47,7 +47,7 @@ const LeaveRequest = sequelize.define(
       type: DataTypes.UUID,
       allowNull: true,
       references: {
-        model: "employees",
+        model: Employee,
         key: "id",
       },
     },

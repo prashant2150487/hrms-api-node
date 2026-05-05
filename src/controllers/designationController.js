@@ -202,7 +202,7 @@ export const updateDesignation = async (req, res) => {
     if (level) {
       designation.level = level;
     }
-    if (designation.department_id) {
+    if (department_id) {
       designation.department_id = department_id;
     }
     await designation.save();
@@ -238,7 +238,7 @@ export const deleteDesignation = async (req, res) => {
         message: "Designation not found",
       });
     }
-    designation.is_active = 0;
+    designation.is_active = false;
     await designation.save();
     return res.status(200).json({
       success: true,
