@@ -8,7 +8,6 @@ import departmentsRoutes from "./departmentsRoutes.js";
 import designationRoutes from "./designationRoutes.js";
 import leaveRoutes from "./leaveRoutes.js";
 
-
 const router = express.Router();
 
 router.use("/auth", authRoutes);
@@ -18,6 +17,6 @@ router.use("/roles", roleRoutes);
 router.use("/employees", employeeRoutes);
 router.use("/departments", departmentsRoutes);
 router.use("/designations", designationRoutes);
-router.use("/leave", leaveRoutes)
+router.use("/leave", leaveRoutes);
 
 export default router;

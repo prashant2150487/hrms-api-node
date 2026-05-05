@@ -39,7 +39,7 @@ const LeavePolicy = sequelize.define(
     },
     is_active: {
       type: DataTypes.BOOLEAN,
-      defaultValue: true
+      defaultValue: true,
     },
     applicable_to: {
       type: DataTypes.JSONB, // e.g., { gender: 'female', employment_type: 'full-time' }
